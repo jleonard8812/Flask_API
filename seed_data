@@ -1,0 +1,33 @@
+from faker import Faker
+from application import app, db
+from app.models import Bebeh
+from random import seed
+
+# Create an application context
+app.app_context().push()
+
+# Seed the random number generator for reproducibility
+seed(42)
+
+# Keep track of generated names to ensure uniqueness
+generated_names = set()
+
+def seed_data():
+    fake = Faker()
+
+    for _ in range(100):
+        # Generate a unique name
+        while True:
+            name = fake.first_name()
+            if name not in generated_names:
+                generated_names.add(name)
+                break
+
+        description = fake.sentence()
+        bebeh = Bebeh(name=name, description=description)
+        db.session.add(bebeh)
+
+    db.session.commit()
+
+if __name__ == '__main__':
+    seed_data()
